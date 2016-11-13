@@ -59,6 +59,20 @@ public:
 };
 
 
+class CppVariant
+{
+public:
+	CppVariant( int n = 0 )	{ new (mBuf) CppVariantInt(n); }
+	~CppVariant()			{ ((CppVariantBase*)mBuf)->~CppVariantBase(); }
+	
+	operator CppVariantBase* () { return (CppVariantBase*)mBuf; }
+	CppVariantBase* operator -> () { return (CppVariantBase*)mBuf; }
+
+protected:
+	uint8_t mBuf[sizeof(CppVariantBase)];
+};
+
+
 void	CppVariantBase::SetAsInt( int n )
 {
 	this->~CppVariantBase();
@@ -74,8 +88,7 @@ void	CppVariantBase::SetAsDouble( double n )
 
 
 int main(int argc, const char * argv[]) {
-	char buf[sizeof(CppVariantBase)];
-	CppVariantBase* someNum = new (buf) CppVariantInt(42);
+	CppVariant someNum(42);
 	
 	cout << "Original int: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
 	
@@ -86,8 +99,6 @@ int main(int argc, const char * argv[]) {
 	someNum->SetAsDouble(12.34);
 
 	cout << "Converted to Double: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
-	
-	someNum->~CppVariantBase();
 	
     return 0;
 }
