@@ -151,15 +151,18 @@ int main(int argc, const char * argv[]) {
 	
 	CppVariant someNum(42);
 	
-	cout << "Original int: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
+	cout << "Original int: " << someNum->GetAsInt()
+		<< " (" << someNum->GetAsDouble() << ")" << endl;
 	
-	someNum->SetAsInt(700);
+	someNum->SetAsInt(700);	// This is just a setter call.
 
-	cout << "Changed int: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
+	cout << "Changed int: " << someNum->GetAsInt()
+		<< " (" << someNum->GetAsDouble() << ")" << endl;
 	
-	someNum->SetAsDouble(12.34);
+	someNum->SetAsDouble(12.34);	// This changes the class to CppVariantDouble.
 
-	cout << "Converted to Double: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
+	cout << "Converted to Double: " << someNum->GetAsInt()
+		<< " (" << someNum->GetAsDouble() << ")" << endl;
 	
     return 0;
 }
