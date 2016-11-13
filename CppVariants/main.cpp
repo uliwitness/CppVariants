@@ -74,17 +74,20 @@ void	CppVariantBase::SetAsDouble( double n )
 
 
 int main(int argc, const char * argv[]) {
-	CppVariantInt	someNum(42);
+	char buf[sizeof(CppVariantBase)];
+	CppVariantBase* someNum = new (buf) CppVariantInt(42);
 	
-	cout << "Original int: " << someNum.GetAsInt() << " (" << someNum.GetAsDouble() << ")" << endl;
+	cout << "Original int: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
 	
-	someNum.SetAsInt(700);
+	someNum->SetAsInt(700);
 
-	cout << "Changed int: " << someNum.GetAsInt() << " (" << someNum.GetAsDouble() << ")" << endl;
+	cout << "Changed int: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
 	
-	someNum.SetAsDouble(12.34);
+	someNum->SetAsDouble(12.34);
 
-	cout << "Converted to Double: " << someNum.GetAsInt() << " (" << someNum.GetAsDouble() << ")" << endl;
+	cout << "Converted to Double: " << someNum->GetAsInt() << " (" << someNum->GetAsDouble() << ")" << endl;
+	
+	someNum->~CppVariantBase();
 	
     return 0;
 }
