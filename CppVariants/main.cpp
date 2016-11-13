@@ -8,6 +8,12 @@
 
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <sstream>
+
+
+#define CPPVMAX2(a,b) (((a) > (b)) ? (a) : (b))
+#define CPPVMAX3(a,b,c)	CPPVMAX2(CPPVMAX2((a), (b)),(c))
 
 
 using namespace std;
@@ -24,38 +30,53 @@ public:
 	
 	virtual void	SetAsInt( int n );
 	virtual void	SetAsDouble( double n );
-	
-protected:
-	union {
-		int			intValue;
-		double		doubleValue;
-	} m;
 };
 
 
 class CppVariantInt : public CppVariantBase
 {
 public:
-	CppVariantInt( int n = 0 ) { cout << "CppVariantInt constructor." << endl; m.intValue = n; }
+	CppVariantInt( int n = 0 ) : mInt(n)
+	{
+		cout << "CppVariantInt constructor." << endl;
+	}
 	~CppVariantInt() { cout << "CppVariantInt destructor." << endl; }
 
-	virtual int		GetAsInt()		{ return m.intValue; }
-	virtual double	GetAsDouble()	{ return m.intValue; }
+	virtual int		GetAsInt()		{ return mInt; }
+	virtual double	GetAsDouble()	{ return mInt; }
 	
-	virtual void	SetAsInt( int n )			{ m.intValue = n; }
+	virtual void	SetAsInt( int n )			{ mInt = n; }
+	
+protected:
+	int		mInt;
 };
 
 
 class CppVariantDouble : public CppVariantBase
 {
 public:
-	CppVariantDouble( double n = 0 ) { cout << "CppVariantDouble constructor." << endl; m.doubleValue = n; }
-	~CppVariantDouble() { cout << "CppVariantDouble destructor." << endl; }
+	CppVariantDouble( double n = 0 ) : mDouble(n)
+	{
+		cout << "CppVariantDouble constructor." << endl;
+	}
+	~CppVariantDouble()
+	{
+		cout << "CppVariantDouble destructor." << endl;
+	}
 
-	virtual int		GetAsInt()				{ if( int(m.doubleValue) == m.doubleValue ) return m.doubleValue; else return 0; }
-	virtual double	GetAsDouble()			{ return m.doubleValue; }
+	virtual int		GetAsInt()
+	{
+		if( int(mDouble) == mDouble )
+			return mDouble;
+		else
+			return round(mDouble);
+	}
+	virtual double	GetAsDouble()			{ return mDouble; }
 	
-	virtual void	SetAsDouble( int n )	{ m.doubleValue = n; }
+	virtual void	SetAsDouble( int n )	{ mDouble = n; }
+
+protected:
+	double mDouble;
 };
 
 
@@ -69,7 +90,7 @@ public:
 	CppVariantBase* operator -> () { return (CppVariantBase*)mBuf; }
 
 protected:
-	uint8_t mBuf[sizeof(CppVariantBase)];
+	uint8_t mBuf[CPPVMAX3(sizeof(CppVariantBase),sizeof(CppVariantInt),sizeof(CppVariantDouble))];
 };
 
 
