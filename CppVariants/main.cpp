@@ -12,49 +12,7 @@
 #include <sstream>
 
 
-#define CPPVMAX2(a,b) (((a) > (b)) ? (a) : (b))
-#define CPPVMAX3(a,b,c)	CPPVMAX2(CPPVMAX2((a), (b)),(c))
-
-
 using namespace std;
-
-
-char varnames[26] = {	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-						'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-						'u', 'v', 'w', 'x', 'y', 'z' };
-
-
-void	MakeMacros( size_t maxNumArgs )
-{
-	stringstream	ss;
-	size_t			currNumArgs = 3;
-	
-	ss << "#define CPPVMAX2(a,b) (((a) > (b)) ? (a) : (b))" << endl;
-	
-	for( size_t x = 2; x < maxNumArgs; x++ )
-	{
-		ss << "#define CPPVMAX" << (x+1) << "(";
-		size_t y = 0;
-		for( ; y < currNumArgs; y++ )
-		{
-			if( y == 0 ) ss << varnames[y];
-			else ss << "," << varnames[y];
-		}
-		ss << ")\tCPPVMAX2(CPPVMAX" << x << "(";
-		y = 0;
-		for( ; y < (currNumArgs -1); y++ )
-		{
-			if( y == 0 ) ss << "(" << varnames[y] << ")";
-			else ss << ", (" << varnames[y] << ")";
-		}
-		ss << "),(" << varnames[y] << "))" << endl;
-		
-		currNumArgs++;
-	}
-	
-	cout << ss.str().c_str() << endl;
-}
-
 
 
 class CppVariantBase
@@ -118,6 +76,9 @@ protected:
 };
 
 
+
+union CppVariantUnion { CppVariantInt b; CppVariantDouble c; };
+
 class CppVariant
 {
 public:
@@ -128,7 +89,7 @@ public:
 	CppVariantBase* operator -> () { return (CppVariantBase*)mBuf; }
 
 protected:
-	uint8_t mBuf[CPPVMAX3(sizeof(CppVariantBase),sizeof(CppVariantInt),sizeof(CppVariantDouble))];
+	uint8_t mBuf[sizeof(union CppVariantUnion)];
 };
 
 
@@ -147,8 +108,6 @@ void	CppVariantBase::SetAsDouble( double n )
 
 
 int main(int argc, const char * argv[]) {
-	//MakeMacros( 26 );	// Build the CPPMAXn() macros for mBuf's size.
-	
 	CppVariant someNum(42);
 	
 	cout << "Original int: " << someNum->GetAsInt()
